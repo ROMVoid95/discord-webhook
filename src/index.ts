@@ -12,10 +12,6 @@ type JobData = {
 
 const { GITHUB_RUN_ID, GITHUB_WORKFLOW } = process.env
 
-function wordToUpperCase(word: string): string {
-  return word[0].toUpperCase() + word.substring(1, word.length).toLowerCase()
-}
-
 function workflowStatusFromJobs(jobs: JobData[]): 'Success' | 'Failure' | 'Cancelled' {
   let statuses = jobs.map(j => j.status)
 
@@ -67,6 +63,8 @@ async function run(): Promise<void> {
 
         let workflowStatus = workflowStatusFromJobs(jobData)
 
+        let status = workflowStatus === 'Success' ? ':white_check_mark: Success' : (workflowStatus === 'Failure' ? ':no_entry: Failure' : ':grey_question: Cancelled')
+
         let color = workflowStatus === 'Success' ? colorSuccess : (workflowStatus === 'Failure' ? colorFailure : colorCancelled)
 
         let payload: DiscordWebhook = {
@@ -79,7 +77,7 @@ async function run(): Promise<void> {
                 url: `https://github.com/${context.repo.owner}/${context.repo.repo}`,
                 icon_url: `https://github.com/${context.repo.owner}.png`
               },
-              title: inputTitle.replace('{{STATUS}}', workflowStatus) || `[${GITHUB_WORKFLOW}]: ${workflowStatus}`,
+              title: inputTitle.replace('{{STATUS}}', workflowStatus) || `Workflow > [${GITHUB_WORKFLOW}]: ${status}`,
               url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${GITHUB_RUN_ID}`,
               description: inputDescription.replace('{{STATUS}}', workflowStatus) || undefined,
               color: color
