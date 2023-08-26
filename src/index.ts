@@ -75,11 +75,11 @@ async function run(): Promise<void> {
           embeds: [
             {
               author: {
-                name: context.actor,
-                url: `https://github.com/${context.actor}`,
-                icon_url: `https://github.com/${context.actor}.png`
+                name: `${context.repo.owner}/${context.repo.repo}`,
+                url: `https://github.com/${context.repo.owner}/${context.repo.repo}`,
+                icon_url: `https://github.com/${context.repo.owner}.png`
               },
-              title: inputTitle.replace('{{STATUS}}', workflowStatus) || `[${context.repo.owner}/${context.repo.repo}] ${GITHUB_WORKFLOW}: ${workflowStatus}`,
+              title: inputTitle.replace('{{STATUS}}', workflowStatus) || `[${GITHUB_WORKFLOW}]: ${workflowStatus}`,
               url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${GITHUB_RUN_ID}`,
               description: inputDescription.replace('{{STATUS}}', workflowStatus) || undefined,
               color: color
