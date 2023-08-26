@@ -65,9 +65,6 @@ const core = __importStar(__nccwpck_require__(2186));
 const GitHub = __importStar(__nccwpck_require__(5438));
 const discord_1 = __importDefault(__nccwpck_require__(2414));
 const { GITHUB_RUN_ID, GITHUB_WORKFLOW } = process.env;
-function wordToUpperCase(word) {
-    return word[0].toUpperCase() + word.substring(1, word.length).toLowerCase();
-}
 function workflowStatusFromJobs(jobs) {
     let statuses = jobs.map(j => j.status);
     if (statuses.includes('cancelled')) {
@@ -111,6 +108,7 @@ function run() {
                         .filter(j => j.status === 'completed')
                         .map(j => ({ name: j.name, status: j.conclusion, url: j.html_url }));
                     let workflowStatus = workflowStatusFromJobs(jobData);
+                    let status = workflowStatus === 'Success' ? ':white_check_mark: Success' : (workflowStatus === 'Failure' ? ':no_entry: Failure' : ':grey_question: Cancelled');
                     let color = workflowStatus === 'Success' ? colorSuccess : (workflowStatus === 'Failure' ? colorFailure : colorCancelled);
                     let payload = {
                         username: username,
@@ -122,7 +120,7 @@ function run() {
                                     url: `https://github.com/${context.repo.owner}/${context.repo.repo}`,
                                     icon_url: `https://github.com/${context.repo.owner}.png`
                                 },
-                                title: inputTitle.replace('{{STATUS}}', workflowStatus) || `[${GITHUB_WORKFLOW}]: ${workflowStatus}`,
+                                title: inputTitle.replace('{{STATUS}}', workflowStatus) || `Workflow > [${GITHUB_WORKFLOW}]: ${status}`,
                                 url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${GITHUB_RUN_ID}`,
                                 description: inputDescription.replace('{{STATUS}}', workflowStatus) || undefined,
                                 color: color
