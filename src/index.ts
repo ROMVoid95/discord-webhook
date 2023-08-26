@@ -29,7 +29,6 @@ function workflowStatusFromJobs(jobs: JobData[]): 'Success' | 'Failure' | 'Cance
 
   return 'Success'
 }
-
 async function run(): Promise<void> {
   try {
     if (GITHUB_RUN_ID == undefined) {
@@ -53,7 +52,7 @@ async function run(): Promise<void> {
       const octokit = GitHub.getOctokit(githubToken)
       const context = GitHub.context
 
-      octokit.actions.listJobsForWorkflowRun({
+      octokit.rest.actions.listJobsForWorkflowRun({
         owner: context.repo.owner,
         repo: context.repo.repo,
         run_id: parseInt(GITHUB_RUN_ID, 10)
@@ -61,6 +60,7 @@ async function run(): Promise<void> {
       .then(response => {
         let workflowJobs = response.data.jobs
 
+        // @ts-ignore
         let jobData: JobData[] = workflowJobs
                                   .filter(j => j.status === 'completed')
                                   .map(j => ({ name: j.name, status: j.conclusion, url: j.html_url }))
@@ -108,7 +108,7 @@ async function run(): Promise<void> {
       })
     }
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message)
   }
 }
 

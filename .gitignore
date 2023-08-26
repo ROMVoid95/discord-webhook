@@ -1,5 +1,6 @@
 # The Discord Test script
 src/test.ts
+.idea
 
 # Dependency directories
 node_modules/
